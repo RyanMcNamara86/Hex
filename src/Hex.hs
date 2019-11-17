@@ -244,27 +244,16 @@ hasLineOfSight blocked beg end =
     any (\i -> blocked!!i) $ hexToSpiral <$> getPath beg end
 
 
-mirrorRectR :: Hex -> Hex
-mirrorRectR tile = fromOddr $ V2 (-1) 1 * toOddr tile
+data MapDims = MapDims { minX :: Int, maxX :: Int
+                       , minY :: Int, maxY :: Int
+                       } deriving (Show, Eq)
 
-wrapRectR :: Hex -> Hex
-wrapRectR tile =
-    let V2 q r = toOddr tile
-        r' = signum r * (-1) + r
-     in fromOddr $ V2 q r'
-
-mirrorRectQ :: Hex -> Hex
-mirrorRectQ tile = fromOddr $ V2 1 (-1) * toOddr tile
-
-wrapRectQ :: Hex -> Hex
-wrapRectQ tile =
-    let V2 q r = toOddr tile
-        q' = signum q * (-1) + q
-     in fromOddr $ V2 q' r
-
-wrapAround :: Int -> Int -> Hex -> Hex
-wrapAround width height tile
-  | q `div` 2 > width  = wrapAround width height $ wrapRectQ tile
-  | r `div` 2 > height = wrapAround width height $ wrapRectR tile
-  | otherwise          = tile
-    where V2 q r = abs $ toOddr tile
+wrapAround :: MapDims -> Hex -> Hex
+wrapAround  mapDims tile = _wrapAround mapDims $ _wrapAround mapDims tile
+_wrapAround mapDims tile
+  | q < minX mapDims = fromOddr $ V2 (maxX mapDims) r
+  | q > maxX mapDims = fromOddr $ V2 (minX mapDims) r
+  | r < minY mapDims = fromOddr $ V2 q (maxY mapDims)
+  | r > maxY mapDims = fromOddr $ V2 q (minY mapDims)
+  | otherwise        = tile
+    where V2 q r = toOddr tile

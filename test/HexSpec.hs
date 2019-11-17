@@ -4,12 +4,13 @@ import Test.Hspec
 import Test.QuickCheck
 import Test.Invariant
 import Debug.Trace
-
 import Data.Tree
 
 import Linear.V3
+import Linear.V2
 
 import Hex
+import Conversion
 
 
 -- The Haskell type checker can't figure out the type of this line in context,
@@ -29,6 +30,14 @@ prop_diagonal x y z = all (isNeighborly x y z) ds
 
 isValid :: Hex -> Bool
 isValid hex = sum hex == 0
+
+instance Arbitrary MapDims where
+    arbitrary = do
+        x0 <- arbitrary
+        y0 <- arbitrary
+        x1 <- arbitrary
+        y1 <- arbitrary
+        return $ MapDims (min x0 x1) (max x0 x1) (min y0 y1) (max y0 y1)
 
 
 -- These are used to test maps with blocked tiles.
@@ -199,9 +208,36 @@ spec = do
             -- TODO: add more examples
             r60 origin (V3 2 1 (-3)) (-1) `shouldBe` V3 (-1) 3 (-2)
 
+    describe "decMag" $ do
+        it "should return 0 for 0" $ do
+            decMag 0 `shouldBe` 0
+        it "should always make the absolute value of a number smaller" $
+            property $ \x -> if   x == 0 then True
+                             else abs x > decMag x
+        it "should never produce a number more than two off" $
+            property $ \x -> abs x - abs (decMag x) <= 1
 
-    describe "mirror" $ do
-        it "should wrap-around at  if it has a distance of 2" $ do
-            wrapAround 2 2 (V3 (-3) 3   0 ) `shouldBe` V3 2 (-2)  0
-            wrapAround 2 2 (V3 (-2) 3 (-1)) `shouldBe` V3 2 (-1) (-1)
-            wrapAround 3 3 (V3 (-2) 3 (-1)) `shouldBe` V3 2 (-1) (-1)
+
+    describe "wrap-around" $ do
+        it "should be correct for a sample of predetermined scenarios" $ do
+            let mapDims = MapDims (-2) 2 (-2) 2
+                input  = fromOddr $ V2 (-3) 2
+                output = fromOddr $ V2 2 2
+             in wrapAround mapDims input `shouldBe` output
+
+            let mapDims = MapDims (-3) 2 (-3) 2
+                input  = fromOddr $ V2 (-4) 0
+                output = fromOddr $ V2 2 0
+             in wrapAround mapDims input `shouldBe` output
+
+            let mapDims = MapDims (-2) 2 (-2) 2
+                input  = fromOddr $ V2 (-2) 3
+                output = fromOddr $ V2 (-2) (-2)
+             in wrapAround mapDims input `shouldBe` output
+
+        it "should never produce a tile outside the map bounds" $ property $
+            \mapDims q r ->
+                let tile     = fromOddr $ V2 q r
+                    V2 q' r' = toOddr $ wrapAround mapDims tile
+                 in q' >= minX mapDims && q' <= maxX mapDims &&
+                    r' >= minY mapDims && r' <= maxY mapDims
