@@ -1,10 +1,10 @@
 name:                Hex
 version:             0.1.0.0
-github:              "githubuser/Hex"
-license:             BSD3
-author:              "Author name here"
-maintainer:          "example@example.com"
-copyright:           "2019 Author name here"
+github:              "RyanMcNamara86/Hex"
+license:             MIT
+author:              "Ryan McNamara"
+maintainer:          "gn341ram@gmail.com"
+copyright:           "2019 RyanMcNamara"
 
 extra-source-files:
 - README.md
@@ -17,27 +17,15 @@ extra-source-files:
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/githubuser/Hex#readme>
+description: A library for hexagonal tilings, intended for use in video games.
 
 dependencies:
 - base >= 4.7 && < 5
 - linear
 - containers
-- lens
 
 library:
   source-dirs: src
-
-executables:
-  Hex-exe:
-    main:                Main.hs
-    source-dirs:         app
-    ghc-options:
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
-    dependencies:
-    - Hex
 
 tests:
   Hex-test:
