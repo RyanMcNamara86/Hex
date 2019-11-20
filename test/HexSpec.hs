@@ -208,16 +208,6 @@ spec = do
             -- TODO: add more examples
             r60 origin (V3 2 1 (-3)) (-1) `shouldBe` V3 (-1) 3 (-2)
 
-    describe "decMag" $ do
-        it "should return 0 for 0" $ do
-            decMag 0 `shouldBe` 0
-        it "should always make the absolute value of a number smaller" $
-            property $ \x -> if   x == 0 then True
-                             else abs x > decMag x
-        it "should never produce a number more than two off" $
-            property $ \x -> abs x - abs (decMag x) <= 1
-
-
     describe "wrap-around" $ do
         it "should be correct for a sample of predetermined scenarios" $ do
             let mapDims = MapDims (-2) 2 (-2) 2
