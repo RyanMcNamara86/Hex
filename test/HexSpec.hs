@@ -10,7 +10,6 @@ import Linear.V3
 import Linear.V2
 
 import Hex
-import Conversion
 
 
 -- The Haskell type checker can't figure out the type of this line in context,
@@ -46,6 +45,18 @@ blocked = [ False, False, True , False,
             True , True , True , True ,
             False, True , True , False,
             False, True , True ]
+
+-- There's not a pretty way to write this.
+onlyBlocked = [  2,  5,  8, 10, 11, 13, 14, 17
+              , 18, 21, 26, 27, 33, 40, 65 ]
+ifBlocked i = if i `elem` onlyBlocked then True else False 
+blocked2 = ifBlocked <$> [0..90]
+
+neighborFn :: Hex -> [Hex]
+neighborFn = let f = mapSizeDecorator 89
+                 g = blockedTileDecorator blocked2
+                 h = neighbors
+              in f $ g $ h
 
 
 main :: IO ()
@@ -208,6 +219,7 @@ spec = do
             -- TODO: add more examples
             r60 origin (V3 2 1 (-3)) (-1) `shouldBe` V3 (-1) 3 (-2)
 
+
     describe "wrap-around" $ do
         it "should be correct for a sample of predetermined scenarios" $ do
             let mapDims = MapDims (-2) 2 (-2) 2
@@ -231,3 +243,22 @@ spec = do
                     V2 q' r' = toOddr $ wrapAround mapDims tile
                  in q' >= minX mapDims && q' <= maxX mapDims &&
                     r' >= minY mapDims && r' <= maxY mapDims
+
+
+    describe "A* Search" $ do
+        it "should not find a path to tiles surrounded by blocked tiles" $ do
+            aStar'  3 `shouldBe` (spiralToHex <$> [0, 3])
+            aStar'  4 `shouldBe` (spiralToHex <$> [0, 4])
+
+            let xs = aStar' 12 in head   xs `shouldBe` origin
+            let xs = aStar' 12 in last   xs `shouldBe` spiralToHex 12
+            let xs = aStar' 12 in length xs `shouldBe` 3
+
+            aStar'  1 `shouldBe` (spiralToHex <$> [0, 1])
+            aStar'  6 `shouldBe` (spiralToHex <$> [0, 6])
+            aStar'  9 `shouldBe` (spiralToHex <$> [0, 6, 16, 15, 30, 29, 28, 48, 47, 46, 25, 24, 23, 9])
+            aStar' 35 `shouldBe` (spiralToHex <$> [0, 1, 7, 36, 35])
+            aStar' 34 `shouldBe` (spiralToHex <$> [0, 1, 7, 36, 35, 34])
+            aStar' 56 `shouldBe` (spiralToHex <$> [0, 6, 16, 32, 55, 56])
+            aStar' 36 `shouldBe` (spiralToHex <$> [0, 1, 7, 36])
+                where aStar' = \x -> aStar origin (spiralToHex x) heuristic neighborFn
