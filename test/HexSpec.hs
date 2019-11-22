@@ -1,10 +1,9 @@
 module HexSpec where
 
+import Data.Tree
 import Test.Hspec
 import Test.QuickCheck
 import Test.Invariant
-import Debug.Trace
-import Data.Tree
 
 import Linear.V3
 import Linear.V2

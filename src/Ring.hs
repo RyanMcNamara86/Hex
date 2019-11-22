@@ -5,11 +5,11 @@ module Ring
     , hexToSpiral
     ) where
 
+import Data.List
+
 import Basic
 import CardinalDirections
 import Lerp (getPath)
-
-import Data.List
 
 
 -- |Tiles in the ring r tiles away from the center

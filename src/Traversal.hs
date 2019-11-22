@@ -24,8 +24,6 @@ import Data.Tree
 
 import Linear.V2
 
-import Debug.Trace
-
 
 -- Required to implement wrapAround.
 data MapDims = MapDims { minX :: Int, maxX :: Int
