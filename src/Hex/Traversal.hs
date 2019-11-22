@@ -1,4 +1,4 @@
-module Traversal
+module Hex.Traversal
     ( mkHexGraph
     , mkHexTree
     , bfs
@@ -14,14 +14,12 @@ module Traversal
     , Heuristic
     ) where
 
-import Basic
-import Conversion
-import Lerp
-import Ring (hexToSpiral)
-
 import Data.List
 import Data.Tree
-
+import Hex.Basic
+import Hex.Conversion
+import Hex.Lerp
+import Hex.Ring (hexToSpiral)
 import Linear.V2
 
 

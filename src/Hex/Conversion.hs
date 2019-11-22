@@ -1,4 +1,4 @@
-module Conversion where
+module Hex.Conversion where
 
 import Linear.V3
 import Linear.V2

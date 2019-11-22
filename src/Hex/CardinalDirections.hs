@@ -1,4 +1,4 @@
-module CardinalDirections
+module Hex.CardinalDirections
     ( right
     , left
     , leftup
@@ -7,7 +7,7 @@ module CardinalDirections
     , rightdown
     ) where
 
-import Basic
+import Hex.Basic
 
 
 -- |The hex to the right of the reference hex on the left-right axis.

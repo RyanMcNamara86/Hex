@@ -1,4 +1,4 @@
-module Ring
+module Hex.Ring
     ( ring
     , spiralToRing
     , spiralToHex
@@ -6,10 +6,9 @@ module Ring
     ) where
 
 import Data.List
-
-import Basic
-import CardinalDirections
-import Lerp (getPath)
+import Hex.Basic
+import Hex.CardinalDirections
+import Hex.Lerp (getPath)
 
 
 -- |Tiles in the ring r tiles away from the center

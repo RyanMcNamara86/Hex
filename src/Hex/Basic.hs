@@ -1,4 +1,4 @@
-module Basic
+module Hex.Basic
     ( Hex
     , origin
     , hexNum
@@ -15,6 +15,7 @@ module Basic
 
 import Data.List
 import Linear.V3
+
 
 type Hex = V3 Int
 

@@ -1,4 +1,4 @@
-module Lerp
+module Hex.Lerp
     ( nearest
     , lerp
     , lerpV
@@ -6,7 +6,7 @@ module Lerp
     , getPath
     ) where
 
-import Basic
+import Hex.Basic
 
 
 nearest :: V3 Double -> Hex
