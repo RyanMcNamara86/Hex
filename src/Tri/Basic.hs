@@ -6,6 +6,8 @@ module Tri.Basic
     , dist
     , isOdd
     , isEven
+    , neighbors
+    , diagonals
     ) where
 
 import Data.List
@@ -34,36 +36,36 @@ dist :: Tri -> Tri -> Int
 dist a b = sum $ abs (a - b)
 
 
--- |An even-parity triangle is one with the pointy-side up.
+-- |An even-parity triangle is a triangle with the pointy-side up.
 isEven :: Tri -> Bool
 isEven v = sum v `mod` 2 == 0
 
 
--- |An odd-parity triangle is one with the pointy-side down.
+-- |An odd-parity triangle is a triangle with the pointy-side down.
 isOdd :: Tri -> Bool
 isOdd = not . isEven
 
 
----- |List all adjacent hexes.
---neighbors :: Hex -> [Hex]
---neighbors (V3 x y z) =
---    let mkhex [a, b, c] = V3 (a+x) (b+y) (c+z)
---     in mkhex <$> (nub . permutations [1, 0, 0])
---
---
----- |The hexes, besides the immediately adjacent hexes, directly
----- attached to a center hex by a single line semgment. These are
----- considered the equivalent of a diagonal move for a hexagonal grid.
---diagonals :: Hex -> [Hex]
---diagonals (V3 x y z) = [ V3 (x + 2) (y - 1) (z - 1)
---                       , V3 (x + 1) (y + 1) (z - 2)
---                       , V3 (x - 1) (y + 2) (z - 1)
---                       , V3 (x - 2) (y + 1) (z + 1)
---                       , V3 (x - 1) (y - 1) (z + 2)
---                       , V3 (x + 1) (y - 2) (z + 1)
---                       ]
---
---
+-- |List all adjacent tris.
+neighbors :: Tri -> [Tri]
+neighbors tri = (tri +/-) <$> [V3 1 0 0, V3 0 1 0, V3 0 0 1] 
+    where (+/-) = if isEven tri then (+) else (-)
+
+
+-- |The diagonal tris are those tris which are connect to a central tri by a
+-- vertex, rather than an edge. It is analogous the the diagonals of a
+-- rectangular grid.
+diagonals :: Tri -> [Tri]
+diagonals v 
+  | isEven v = map (v+) [ V3 0 (-1) 1,   V3 1 (-1) 1   ,   V3 1 (-1) 0
+                        , V3 1 0 (-1),   V3 1 1 (-1)   ,   V3 0 1 (-1)
+                        , V3 (-1) 1 0,   V3 (-1) 1 1   ,   V3 (-1) 0 1 ]
+
+  | isOdd v  = map (v+) [ V3 1 (-1) 0,   V3 1 (-1) (-1),   V3 1 0 (-1)
+                        , V3 0 1 (-1),   V3 (-1) 1 (-1),   V3 (-1) 1 0
+                        , V3 (-1) 0 1,   V3 (-1) (-1) 1,   V3 0 (-1) 1 ]
+
+
 ---- |Hexagons which are within "range" of the reference tile.
 --inRange :: Hex -> Int -> [Hex]
 --inRange (V3 x y z) range =
