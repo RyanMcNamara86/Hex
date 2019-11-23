@@ -7,7 +7,6 @@ module Hex
     , module Hex.Traversal
     ) where
 
-
 import Hex.Basic
 import Hex.CardinalDirections
 import Hex.Conversion
