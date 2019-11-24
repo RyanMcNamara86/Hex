@@ -8,6 +8,8 @@ module Tri.Basic
     , isEven
     , neighbors
     , diagonals
+    , inRange
+    , bfs
     ) where
 
 import Data.List
@@ -24,6 +26,7 @@ origin = V3 0 0 0
 
 -- |OEIS: A005448; area within n tiles from the center
 triNum :: Int -> Int
+triNum 0 = 0
 triNum n = 3 * n * (n - 1) `div` 2 + 1
 
 
@@ -66,16 +69,25 @@ diagonals v
                         , V3 (-1) 0 1,   V3 (-1) (-1) 1,   V3 0 (-1) 1 ]
 
 
----- |Hexagons which are within "range" of the reference tile.
---inRange :: Hex -> Int -> [Hex]
---inRange (V3 x y z) range =
---    let mkRange ref = [ref-range .. ref+range]
---     in [ V3 a b c | a <- mkRange x
---                   , b <- mkRange x
---                   , c <- mkRange x
---                   , a + b + c == 0 ]
---
---
+mirrorX (V3 x y z) = V3 x z y
+mirrorY (V3 x y z) = V3 z y x
+mirrorZ (V3 x y z) = V3 y x z
+
+
+bfs :: Tri -> [Tri]
+bfs center = center : _bfs [center] [center]
+
+_bfs :: [Tri] -> [Tri] -> [Tri]
+_bfs [] _ = []
+_bfs queue visited = q ++ _bfs q v
+  where q = nub $ filter (`notElem` visited) (concat $ neighbors <$> queue)
+        v = queue ++ visited
+
+
+-- |Hexagons which are within "range" of the reference tile.
+inRange :: Tri -> Int -> [Tri]
+inRange center range = take (triNum range) (bfs center)
+
 ---- |The set of hexagons which are within "range" tiles of the both reference
 ---- tiles.
 --intersection :: Hex -> Hex -> Int -> [Hex]

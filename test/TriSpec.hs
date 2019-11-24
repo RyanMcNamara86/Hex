@@ -118,3 +118,20 @@ spec = parallel $ do
             diagonals (V3 0 1 0) `shouldContain` [V3 (-1) 1 1]
             diagonals (V3 0 1 0) `shouldContain` [V3 (-1) 0 1]
             diagonals (V3 0 1 0) `shouldContain` [V3 0 0 1]
+
+
+    describe "inRange" $ do
+        it "should produce a number of tiles predicted by triNum" $ property $
+            (\n -> triNum n == (length $ inRange origin n))
+
+        it "should have all the tiles for range 2" $ do
+            inRange origin 3 `shouldContain` [V3 0 0 0]
+            inRange origin 3 `shouldContain` [V3 1 0 0]
+            inRange origin 3 `shouldContain` [V3 0 1 0]
+            inRange origin 3 `shouldContain` [V3 0 0 1]
+            inRange origin 3 `shouldContain` [V3 1 0 (-1)]
+            inRange origin 3 `shouldContain` [V3 0 1 (-1)]
+            inRange origin 3 `shouldContain` [V3 (-1) 1 0]
+            inRange origin 3 `shouldContain` [V3 (-1) 0 1]
+            inRange origin 3 `shouldContain` [V3 0 (-1) 1]
+            inRange origin 3 `shouldContain` [V3 1 (-1) 0]
