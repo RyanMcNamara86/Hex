@@ -98,18 +98,3 @@ r60 pivot v k
   | k == 5 = pivot + negate (V3 y z x)
   | otherwise = r60 pivot v (k `mod` 6)
     where V3 x y z = v - pivot
-<<<<<<< HEAD
-=======
-
--- The logic behind the implementation below is that you can rotate a hex by
--- 120 degrees by taking the x coordinate and moving it to the back. You can
--- also mirror a hex by multiplying it by -1, which gives us the space in
--- between our 120 degree turns. A rotation of 3 is a special case of of
--- rotating clockwise 3 times and multiplying by -1, where 3 * 120 == no
--- rotation at all.
---r60 pivot v@(V3 x y z) 1 = negate $ pivot + (shiftL (v - pivot))
---r60 pivot v 2 = pivot + shiftR (v - pivot)
---r60 pivot v 3 = negate v
---r60 pivot v 4 = v
---r60 pivot v 5 = negate $ shiftR (v - pivot)
->>>>>>> refs/remotes/origin/master
