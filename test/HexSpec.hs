@@ -214,9 +214,24 @@ spec = do
 
 
     describe "r60" $ do
-        it "should rotate tiles along an axis" $ do
-            -- TODO: add more examples
-            r60 origin (V3 2 1 (-3)) (-1) `shouldBe` V3 (-1) 3 (-2)
+        it "should rotate tiles along the origin" $ do
+            let payload = V3 0 (-2) 2
+            r60 origin payload 1 `shouldBe` V3 (-2) 0 2
+            r60 origin payload 2 `shouldBe` V3 (-2) 2 0
+            r60 origin payload 3 `shouldBe` V3 0 2 (-2)
+            r60 origin payload 4 `shouldBe` V3 2 0 (-2)
+            r60 origin payload 5 `shouldBe` V3 2 (-2) 0
+            r60 origin payload 6 `shouldBe` payload
+
+        it "should rotate tiles along a non-origin point" $ do
+            let pivot   = V3 0 (-1) 1
+            let payload = V3 (-1) (-1) 2
+            r60 pivot payload 1 `shouldBe` V3 (-1) 0 1
+            r60 pivot payload 2 `shouldBe` V3 0 0 0
+            r60 pivot payload 3 `shouldBe` V3 1 (-1) 0
+            r60 pivot payload 4 `shouldBe` V3 1 (-2) 1
+            r60 pivot payload 5 `shouldBe` V3 0 (-2) 2
+            r60 pivot payload 6 `shouldBe` payload
 
 
     describe "wrap-around" $ do
