@@ -10,6 +10,7 @@ module Tri.Basic
     , diagonals
     , inRange
     , bfs
+    , r120
     ) where
 
 import Data.List
@@ -69,11 +70,6 @@ diagonals v
                         , V3 (-1) 0 1,   V3 (-1) (-1) 1,   V3 0 (-1) 1 ]
 
 
-mirrorX (V3 x y z) = V3 x z y
-mirrorY (V3 x y z) = V3 z y x
-mirrorZ (V3 x y z) = V3 y x z
-
-
 bfs :: Tri -> [Tri]
 bfs center = center : _bfs [center] [center]
 
@@ -88,20 +84,34 @@ _bfs queue visited = q ++ _bfs q v
 inRange :: Tri -> Int -> [Tri]
 inRange center range = take (triNum range) (bfs center)
 
----- |The set of hexagons which are within "range" tiles of the both reference
----- tiles.
---intersection :: Hex -> Hex -> Int -> [Hex]
---intersection a b range =
---    [hex | hex <- inRange a range, hex `elem` inRange b range]
---
---
----- |Rotate a hex 60 degrees.
---r60 :: Hex -> Hex -> Int -> Hex
---r60 pivot (V3 x y z) k =
---    case k of 0 -> V3 x y z
---              1 -> V3 (-z) (-x) (-y)
---              2 -> V3 y z x
---              3 -> V3 (-x) (-y) (-z)
---              4 -> V3 z x y
---              5 -> V3 (-y) (-z) (-x)
---              otherwise -> r60 pivot (V3 x y z) (k `mod` 6)
+-- |The set of hexagons which are within "range" tiles of the both reference
+-- tiles.
+intersection :: Tri -> Tri -> Int -> [Tri]
+intersection a b range =
+    [tri | tri <- inRange a range, tri `elem` inRange b range]
+
+
+-- There's an interesting symmetry with these functions that is probably more
+-- obvious to someone better at geometry and linear algebra than me.
+mirrorX :: Tri -> Tri
+mirrorX (V3 x y z) = V3 x z y
+
+mirrorY :: Tri -> Tri
+mirrorY (V3 x y z) = V3 z y x
+
+mirrorZ :: Tri -> Tri
+mirrorZ (V3 x y z) = V3 y x z
+
+rotateL :: Tri -> Tri
+rotateL (V3 x y z) = V3 y z x
+
+rotateR :: Tri -> Tri
+rotateR (V3 x y z) = V3 z x y
+
+
+-- |Rotate a hex 120 degrees.
+r120 :: Tri -> Tri -> Int -> Tri
+r120 pivot v 0 = v
+r120 pivot v 1 = pivot + rotateR (v - pivot)
+r120 pivot v 2 = pivot + rotateL (v - pivot)
+r120 pivot v k = r120 pivot v (k `mod` 3)

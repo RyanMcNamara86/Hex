@@ -15,6 +15,7 @@ module Hex.Basic
 
 import Data.List
 import Linear.V3
+import Debug.Trace
 
 
 type Hex = V3 Int
@@ -80,14 +81,32 @@ intersection :: Hex -> Hex -> Int -> [Hex]
 intersection a b range =
     [hex | hex <- inRange a range, hex `elem` inRange b range]
 
+shiftR :: Hex -> Hex
+shiftR (V3 x y z) = V3 z x y
+
+shiftL :: Hex -> Hex
+shiftL = shiftR . shiftR
 
 -- |Rotate a hex 60 degrees.
 r60 :: Hex -> Hex -> Int -> Hex
-r60 pivot (V3 x y z) k =
-    case k of 0 -> V3 x y z
-              1 -> V3 (-z) (-x) (-y)
-              2 -> V3 y z x
-              3 -> V3 (-x) (-y) (-z)
-              4 -> V3 z x y
-              5 -> V3 (-y) (-z) (-x)
-              otherwise -> r60 pivot (V3 x y z) (k `mod` 6)
+r60 pivot v k
+  | k == 0 = v
+  | k == 1 = pivot + negate (V3 z x y)
+  | k == 2 = pivot + V3 y z x
+  | k == 3 = pivot + negate (V3 x y z)
+  | k == 4 = pivot + V3 z x y
+  | k == 5 = pivot + negate (V3 y z x)
+  | otherwise = r60 pivot v (k `mod` 6)
+    where V3 x y z = v - pivot
+
+-- The logic behind the implementation below is that you can rotate a hex by
+-- 120 degrees by taking the x coordinate and moving it to the back. You can
+-- also mirror a hex by multiplying it by -1, which gives us the space in
+-- between our 120 degree turns. A rotation of 3 is a special case of of
+-- rotating clockwise 3 times and multiplying by -1, where 3 * 120 == no
+-- rotation at all.
+--r60 pivot v@(V3 x y z) 1 = negate $ pivot + (shiftL (v - pivot))
+--r60 pivot v 2 = pivot + shiftR (v - pivot)
+--r60 pivot v 3 = negate v
+--r60 pivot v 4 = v
+--r60 pivot v 5 = negate $ shiftR (v - pivot)
