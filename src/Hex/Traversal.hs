@@ -1,7 +1,7 @@
 module Hex.Traversal
     ( mkHexGraph
     , mkHexTree
-    , bfs
+    , dijkstra
     , hasLineOfSight
     , MapDims (..)
     , wrapAround
@@ -64,16 +64,16 @@ _wrapAround mapDims tile
 
 
 --------------------------------------------------------------------------------
---           Breadth-First Search algorithm and helper functions.             --
+--                Dijkstra's algorithm and helper functions.                  --
 --------------------------------------------------------------------------------
 
--- |Breadth first search, the Intro to Algorithms classic.
-bfs :: [Bool] -> Hex -> [(Hex, Int)]
-bfs blocked center = _bfs [] [(center, 0)] blocked
+-- |Dijkstra' Algorithm
+dijkstra :: [Bool] -> Hex -> [(Hex, Int)]
+dijkstra blocked center = _djk [] [(center, 0)] blocked
 
 
 {-
-   Breadth first search requires two bits of state: a list of visited tiles,
+   Dijkstra's Algorithm requires two bits of state: a list of visited tiles,
    and a queue of hexes and their distance which have not been processed yet.
   
    params:
@@ -86,16 +86,16 @@ bfs blocked center = _bfs [] [(center, 0)] blocked
                  tile when it is added to the queue because the function has no
                  other way of knowing when the item was added to the queue.
 -}
-_bfs :: [Hex] -> [(Hex, Int)] -> [Bool] -> [(Hex, Int)]
-_bfs visited [] blocked = []
-_bfs visited ((q, k):qs) blocked
+_djk :: [Hex] -> [(Hex, Int)] -> [Bool] -> [(Hex, Int)]
+_djk visited [] blocked = []
+_djk visited ((q, k):qs) blocked
   | hexToSpiral q > length blocked = [] -- check needed for next guard
-  | blocked!!hexToSpiral q = _bfs (q:visited) qs blocked
-  | q `elem` visited       = _bfs   visited   qs blocked
+  | blocked!!hexToSpiral q = _djk (q:visited) qs blocked
+  | q `elem` visited       = _djk   visited   qs blocked
   | otherwise = let mkPair tile = (tile, k + 1)
                     qs'         = qs ++ (mkPair <$> neighbors q)
                     visited'    = q : visited
-                 in (q, k) : _bfs visited' qs' blocked
+                 in (q, k) : _djk visited' qs' blocked
 
 
 --------------------------------------------------------------------------------

@@ -199,9 +199,9 @@ spec = do
              in monotonicIncreasing f
 
 
-    describe "Hex breadth first search ( _bfs )" $ do
+    describe "Hex breadth first search ( _djk )" $ do
         it "should produce 4 traversible tiles at distance 1" $ do
-            let searched = take (hexNum 1) (bfs blocked origin)
+            let searched = take (hexNum 1) (dijkstra blocked origin)
             searched `shouldContain` [(V3 (-1) 1 0, 1)]
             searched `shouldContain` [(V3 0 (-1) 1, 1)]
             searched `shouldContain` [(V3 (-1) 1 0, 1)]
@@ -209,8 +209,8 @@ spec = do
 
         it "should produce 7 traversible tiles at distance 2" $ do
             let filterDist2 = takeWhile (\(_, n) -> n <= 2)
-                bfsResults  = bfs blocked origin
-             in length bfsResults `shouldBe` 8
+                dijkstraResults  = dijkstra blocked origin
+             in length dijkstraResults `shouldBe` 8
 
 
     describe "r60" $ do
